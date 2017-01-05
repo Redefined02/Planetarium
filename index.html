@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.min.js"></script>
+		<script>
+      var solarSystem = new THREE.Group();
+      var scene = new THREE.Scene();
+      var height = window.innerHeight;
+      var width = window.innerWidth;
+      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( width, height );
+			document.body.appendChild( renderer.domElement );
+
+			var bgScene = new THREE.Scene();
+			var bgCamera = new THREE.Camera();
+			bgScene.add(bgCamera);
+
+			// set up all your planets/textures/geometries/objects
+			var geometry = new THREE.SphereGeometry( 1, 32, 32 );
+			var plane = new THREE.PlaneGeometry(2, 2, 0);
+			var loader = new THREE.TextureLoader();
+			loader.setCrossOrigin("");
+
+			loader.load("http://i.imgur.com/9xXRzuT.jpg?1", function(texture){
+				var planeMat = new THREE.MeshBasicMaterial({map:texture});
+				var starfield = new THREE.Mesh(plane, planeMat);
+				starfield.material.depthTest = false;
+				starfield.material.depthWrite = false;
+				bgScene.add(starfield);
+			});
+
+			loader.load("http://i.imgur.com/Rgl3AtE.jpg?2", function(texture){
+				var sunMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var sun = new THREE.Mesh(geometry, sunMat);
+				sun.position.set(0, 0, 0);
+				solarSystem.add(sun);
+			});
+
+			loader.load("http://i.imgur.com/8rlD8tu.jpg", function(texture){
+				var mercuryMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var mercury = new THREE.Mesh(geometry, mercuryMat);
+				mercury.position.set(2.2, 0, 0);
+				solarSystem.add(mercury);
+			});
+
+			loader.load("http://i.imgur.com/1exVoLT.jpg", function(texture){
+				var venusMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var venus = new THREE.Mesh(geometry, venusMat);
+				venus.position.set(4.4, 0, 0);
+				solarSystem.add(venus);
+			});
+
+			loader.load("http://i.imgur.com/NPI2Xq8.jpg", function(texture){
+				var earthMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var earth = new THREE.Mesh(geometry, earthMat);
+				earth.position.set(6.6, 0, 0);
+				solarSystem.add(earth);
+			});
+
+			loader.load("http://i.imgur.com/qimsjii.jpg", function(texture){
+				var marsMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var mars = new THREE.Mesh(geometry, marsMat);
+				mars.position.set(8.8, 0, 0);
+				solarSystem.add(mars);
+			});
+
+			loader.load("http://i.imgur.com/64LsZak.jpg?2", function(texture){
+				var jupiterMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var jupiter = new THREE.Mesh(geometry, jupiterMat);
+				jupiter.position.set(11, 0, 0);
+				solarSystem.add(jupiter);
+			});
+
+			loader.load("http://i.imgur.com/OiVJTrL.jpg", function(texture){
+				var saturnMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var saturn = new THREE.Mesh(geometry, saturnMat);
+				saturn.position.set(13.2, 0, 0);
+				solarSystem.add(saturn);
+			});
+			loader.load("http://i.imgur.com/9pCZmH5.jpg", function(texture){
+				var uranusMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var uranus = new THREE.Mesh(geometry, uranusMat);
+				uranus.position.set(15.4, 0, 0);
+				solarSystem.add(uranus);
+			});
+
+			loader.load("http://i.imgur.com/StPIvES.jpg", function(texture){
+				var neptuneMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var neptune = new THREE.Mesh(geometry, neptuneMat);
+				neptune.position.set(17.6, 0, 0);
+				solarSystem.add(neptune);
+			});
+
+			loader.load("http://i.imgur.com/SQVRRGU.jpg?1", function(texture){
+				var plutoMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
+				var pluto = new THREE.Mesh(geometry, plutoMat);
+				pluto.position.set(20, 0, 0);
+				solarSystem.add(pluto);
+			});
+
+      scene.add(solarSystem);
+
+			camera.position.z = 15;
+
+			var render = function () {
+				requestAnimationFrame( render );
+
+				solarSystem.rotation.y += 0.01;
+				solarSystem.position.set(-10,0,0);
+
+				renderer.autoClear = false;
+				renderer.clear();
+				renderer.render(bgScene, bgCamera);
+				renderer.render(scene, camera);
+			};
+
+			render();
+		</script>
+	</body>
+</html>
