@@ -61,22 +61,24 @@
 
 				var loader = new THREE.TextureLoader();
 				loader.setCrossOrigin("");
+				var maxAniso = renderer.getMaxAnisotropy();
 
-				loader.load("http://i.imgur.com/9xXRzuT.jpg?1", function(texture){
-					var plane = new THREE.PlaneGeometry(2, 2, 0);
-					var planeMat = new THREE.MeshBasicMaterial({map:texture});
-					var starfield = new THREE.Mesh(plane, planeMat);
-					starfield.material.depthTest = false;
-					starfield.material.depthWrite = false;
-					bgScene.add(starfield);
-				});
+				var plane = new THREE.PlaneGeometry(2, 2, 0);
+				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
+				bgTexture.anisotropy = maxAniso;
+				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
+				var starfield = new THREE.Mesh(plane, planeMat);
+				starfield.material.depthTest = false;
+				starfield.material.depthWrite = false;
+				bgScene.add(starfield);
 
-				loader.load('http://i.imgur.com/1exVoLT.jpg', function (texture){
-					var venusGeo = new THREE.SphereGeometry(200, 20, 20);
-					var venusMat = new THREE.MeshBasicMaterial({map: texture, overdraw: 0.5});
-					var venus = new THREE.Mesh(venusGeo, venusMat);
-					scene.add(venus);
-				});
+				var venusGeo = new THREE.SphereGeometry(200, 20, 20);
+				var venusTexture = loader.load('http://i.imgur.com/1exVoLT.jpg');
+				venusTexture.anisotropy = maxAniso;
+				var venusMat = new THREE.MeshBasicMaterial({map: venusTexture, overdraw: 0.5});
+				var venus = new THREE.Mesh(venusGeo, venusMat);
+				scene.add(venus);
+
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();

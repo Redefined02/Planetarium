@@ -61,22 +61,34 @@
 
 				var loader = new THREE.TextureLoader();
 				loader.setCrossOrigin("");
+				var maxAniso = renderer.getMaxAnisotropy();
 
-				loader.load("http://i.imgur.com/9xXRzuT.jpg?1", function(texture){
-					var plane = new THREE.PlaneGeometry(2, 2, 0);
-					var planeMat = new THREE.MeshBasicMaterial({map:texture});
-					var starfield = new THREE.Mesh(plane, planeMat);
-					starfield.material.depthTest = false;
-					starfield.material.depthWrite = false;
-					bgScene.add(starfield);
-				});
+				// Backdrop
+				var plane = new THREE.PlaneGeometry(2, 2, 0);
+				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
+				bgTexture.anisotropy = maxAniso;
+				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
+				var starfield = new THREE.Mesh(plane, planeMat);
+				starfield.material.depthTest = false;
+				starfield.material.depthWrite = false;
+				bgScene.add(starfield);
 
-				loader.load('http://i.imgur.com/NPI2Xq8.jpg', function (texture){
-					var earthGeo = new THREE.SphereGeometry(200, 20, 20);
-					var earthMat = new THREE.MeshBasicMaterial({map: texture, overdraw: 0.5});
-					var earth = new THREE.Mesh(earthGeo, earthMat);
-					scene.add(earth);
+				// Model
+				var earthGeo = new THREE.SphereGeometry(200, 20, 20);
+				var earthTexture = loader.load('http://i.imgur.com/NPI2Xq8.jpg');
+				var specMap = loader.load('http://i.imgur.com/Th0w4H1.jpg');
+				var bMap = loader.load('http://i.imgur.com/FrJlVaN.jpg');
+				earthTexture.anisotropy = maxAniso;
+				var earthMat = new THREE.MeshPhongMaterial({
+					//specular: 0x222222,
+					bumpMap: bMap,
+					bumpScale: 1,
+					map: earthTexture,
+					//specularMap: specMap,
+					overdraw: 0.5
 				});
+				var earth = new THREE.Mesh(earthGeo, earthMat);
+				scene.add(earth);
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();

@@ -61,22 +61,23 @@
 
 				var loader = new THREE.TextureLoader();
 				loader.setCrossOrigin("");
+				var maxAniso = renderer.getMaxAnisotropy();
 
-				loader.load("http://i.imgur.com/9xXRzuT.jpg?1", function(texture){
-					var plane = new THREE.PlaneGeometry(2, 2, 0);
-					var planeMat = new THREE.MeshBasicMaterial({map:texture});
-					var starfield = new THREE.Mesh(plane, planeMat);
-					starfield.material.depthTest = false;
-					starfield.material.depthWrite = false;
-					bgScene.add(starfield);
-				});
+				var plane = new THREE.PlaneGeometry(2, 2, 0);
+				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
+				bgTexture.anisotropy = maxAniso;
+				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
+				var starfield = new THREE.Mesh(plane, planeMat);
+				starfield.material.depthTest = false;
+				starfield.material.depthWrite = false;
+				bgScene.add(starfield);
 
-				loader.load('http://i.imgur.com/qimsjii.jpg', function (texture){
-					var marsGeo = new THREE.SphereGeometry(200, 20, 20);
-					var marsMat = new THREE.MeshBasicMaterial({map: texture, overdraw: 0.5});
-					var mars = new THREE.Mesh(marsGeo, marsMat);
-					scene.add(mars);
-				});
+				var marsGeo = new THREE.SphereGeometry(200, 20, 20);
+				var mTexture = loader.load('http://i.imgur.com/qimsjii.jpg');
+				mTexture.anisotropy = maxAniso;
+				var marsMat = new THREE.MeshBasicMaterial({map: mTexture, overdraw: 0.5});
+				var mars = new THREE.Mesh(marsGeo, marsMat);
+				scene.add(mars);
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();

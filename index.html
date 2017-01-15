@@ -24,6 +24,7 @@
 		</style>
 	</head>
 	<body>
+		<div id="container"></div>
 		<div id="info">
 			Planetarium</br>
 			move camera with WASD, zoom in and out with left/right mouse</br>
@@ -32,6 +33,7 @@
 		</div>
 		<script src="js/three.min.js"></script>
 		<script src="lib/examples/js/controls/FirstPersonControls.js"></script>
+		<script src="lib/examples/js/libs/stats.min.js"></script>
 		<script>
 			// declare variables
 			var solarSystem, camera, scene, renderer, controls, bgScene, bgCamera, clock;
@@ -70,85 +72,107 @@
 
 				// set cors policy to anonymous to load texture images
 				loader.setCrossOrigin("");
+				var maxAniso = renderer.getMaxAnisotropy();
 
 				// create a backdrop with a starfield texture
-				loader.load("http://i.imgur.com/9xXRzuT.jpg?1", function(texture){
-					var planeMat = new THREE.MeshBasicMaterial({map:texture});
-					var starfield = new THREE.Mesh(plane, planeMat);
-					starfield.material.depthTest = false;
-					starfield.material.depthWrite = false;
-					bgScene.add(starfield);
-				});
+				var plane = new THREE.PlaneGeometry(2, 2, 0);
+				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
+				bgTexture.anisotropy = maxAniso;
+				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
+				var starfield = new THREE.Mesh(plane, planeMat);
+				starfield.material.depthTest = false;
+				starfield.material.depthWrite = false;
+				bgScene.add(starfield);
 
-				loader.load("http://i.imgur.com/Rgl3AtE.jpg?2", function(texture){
-					var sunMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var sun = new THREE.Mesh(geometry, sunMat);
-					sun.position.set(0, 0, 0);
-					solarSystem.add(sun);
-				});
+				// Sun model
+				var sunGeo = new THREE.SphereGeometry(1, 32, 32);
+				var sunTexture = loader.load('http://i.imgur.com/Rgl3AtE.jpg?2');
+				sunTexture.anisotropy = maxAniso;
+				var sunMat = new THREE.MeshBasicMaterial({map: sunTexture, overdraw: 0.5});
+				var sun = new THREE.Mesh(sunGeo, sunMat);
+				sun.position.set(0, 0, 0);
+				solarSystem.add(sun);
 
-				loader.load("http://i.imgur.com/8rlD8tu.jpg", function(texture){
-					var mercuryMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var mercury = new THREE.Mesh(geometry, mercuryMat);
-					mercury.position.set(2.2, 0, 0);
-					solarSystem.add(mercury);
-				});
+				// Mercury model
+				var mercuryGeo = new THREE.SphereGeometry(1, 32, 32);
+				var mercTexture = loader.load('http://i.imgur.com/8rlD8tu.jpg');
+				mercTexture.anisotropy = maxAniso;
+				var mercuryMat = new THREE.MeshBasicMaterial({map: mercTexture, overdraw: 0.5});
+				var mercury = new THREE.Mesh(mercuryGeo, mercuryMat);
+				mercury.position.set(2.2, 0, 0);
+				solarSystem.add(mercury);
 
-				loader.load("http://i.imgur.com/1exVoLT.jpg", function(texture){
-					var venusMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var venus = new THREE.Mesh(geometry, venusMat);
-					venus.position.set(4.4, 0, 0);
-					solarSystem.add(venus);
-				});
+				// Venus model
+				var venusGeo = new THREE.SphereGeometry(1, 32, 32);
+				var venusTexture = loader.load('http://i.imgur.com/1exVoLT.jpg');
+				venusTexture.anisotropy = maxAniso;
+				var venusMat = new THREE.MeshBasicMaterial({map: venusTexture, overdraw: 0.5});
+				var venus = new THREE.Mesh(venusGeo, venusMat);
+				venus.position.set(4.4, 0, 0);
+				solarSystem.add(venus);
 
-				loader.load("http://i.imgur.com/NPI2Xq8.jpg", function(texture){
-					var earthMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var earth = new THREE.Mesh(geometry, earthMat);
-					earth.position.set(6.6, 0, 0);
-					solarSystem.add(earth);
-				});
+				// Earth Model
+				var earthGeo = new THREE.SphereGeometry(1, 32, 32);
+				var earthTexture = loader.load('http://i.imgur.com/NPI2Xq8.jpg');
+				earthTexture.anisotropy = maxAniso;
+				var earthMat = new THREE.MeshBasicMaterial({map: earthTexture, overdraw: 0.5});
+				var earth = new THREE.Mesh(earthGeo, earthMat);
+				earth.position.set(6.6, 0, 0);
+				solarSystem.add(earth);
 
-				loader.load("http://i.imgur.com/qimsjii.jpg", function(texture){
-					var marsMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var mars = new THREE.Mesh(geometry, marsMat);
-					mars.position.set(8.8, 0, 0);
-					solarSystem.add(mars);
-				});
+				// Mars model
+				var marsGeo = new THREE.SphereGeometry(1, 32, 32);
+				var mTexture = loader.load('http://i.imgur.com/qimsjii.jpg');
+				mTexture.anisotropy = maxAniso;
+				var marsMat = new THREE.MeshBasicMaterial({map: mTexture, overdraw: 0.5});
+				var mars = new THREE.Mesh(marsGeo, marsMat);
+				mars.position.set(8.8, 0, 0);
+				solarSystem.add(mars);
 
-				loader.load("http://i.imgur.com/64LsZak.jpg?2", function(texture){
-					var jupiterMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var jupiter = new THREE.Mesh(geometry, jupiterMat);
-					jupiter.position.set(11, 0, 0);
-					solarSystem.add(jupiter);
-				});
+				// Jupiter model
+				var jupiterGeo = new THREE.SphereGeometry(1, 32, 32);
+				var jupiterTexture = loader.load('http://i.imgur.com/64LsZak.jpg?2');
+				jupiterTexture.anisotropy = maxAniso;
+				var jupiterMat = new THREE.MeshBasicMaterial({map: jupiterTexture, overdraw: 0.5});
+				var jupiter = new THREE.Mesh(jupiterGeo, jupiterMat);
+				jupiter.position.set(11, 0, 0);
+				solarSystem.add(jupiter);
 
-				loader.load("http://i.imgur.com/OiVJTrL.jpg", function(texture){
-					var saturnMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var saturn = new THREE.Mesh(geometry, saturnMat);
-					saturn.position.set(13.2, 0, 0);
-					solarSystem.add(saturn);
-				});
+				// Saturn model
+				var saturnGeo = new THREE.SphereGeometry(1, 32, 32);
+				var saturnTexture = loader.load('http://i.imgur.com/OiVJTrL.jpg');
+				saturnTexture.anisotropy = maxAniso;
+				var saturnMat = new THREE.MeshBasicMaterial({map: saturnTexture, overdraw: 0.5});
+				var saturn = new THREE.Mesh(saturnGeo, saturnMat);
+				saturn.position.set(13.2, 0, 0);
+				solarSystem.add(saturn);
 
-				loader.load("http://i.imgur.com/9pCZmH5.jpg", function(texture){
-					var uranusMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var uranus = new THREE.Mesh(geometry, uranusMat);
-					uranus.position.set(15.4, 0, 0);
-					solarSystem.add(uranus);
-				});
+				// Uranus model
+				var uranusGeo = new THREE.SphereGeometry(1, 32, 32);
+				var uranusTexture = loader.load('http://i.imgur.com/9pCZmH5.jpg');
+				uranusTexture.anisotropy = maxAniso;
+				var uranusMat = new THREE.MeshBasicMaterial({map: uranusTexture, overdraw: 0.5});
+				var uranus = new THREE.Mesh(uranusGeo, uranusMat);
+				uranus.position.set(15.4, 0, 0);
+				solarSystem.add(uranus);
 
-				loader.load("http://i.imgur.com/StPIvES.jpg", function(texture){
-					var neptuneMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var neptune = new THREE.Mesh(geometry, neptuneMat);
-					neptune.position.set(17.6, 0, 0);
-					solarSystem.add(neptune);
-				});
+				// Neptune model
+				var nepGeo = new THREE.SphereGeometry(1, 32, 32);
+				var nepTexture = loader.load('http://i.imgur.com/StPIvES.jpg');
+				nepTexture.anisotropy = maxAniso;
+				var nepMat = new THREE.MeshBasicMaterial({map: nepTexture, overdraw: 0.5});
+				var neptune = new THREE.Mesh(nepGeo, nepMat);
+				neptune.position.set(17.6, 0, 0);
+				solarSystem.add(neptune);
 
-				loader.load("http://i.imgur.com/SQVRRGU.jpg?1", function(texture){
-					var plutoMat = new THREE.MeshBasicMaterial({map:texture, overdraw: 0.5});
-					var pluto = new THREE.Mesh(geometry, plutoMat);
-					pluto.position.set(20, 0, 0);
-					solarSystem.add(pluto);
-				});
+				// Pluto model
+				var plutoGeo = new THREE.SphereGeometry(1, 32, 32);
+				var plutoTexture = loader.load('http://i.imgur.com/SQVRRGU.jpg?1');
+				plutoTexture.anisotropy = maxAniso;
+				var plutoMat = new THREE.MeshBasicMaterial({map: plutoTexture, overdraw: 0.5});
+				var pluto = new THREE.Mesh(plutoGeo, plutoMat);
+				pluto.position.set(20, 0, 0);
+				solarSystem.add(pluto);
 
       	scene.add(solarSystem);
 
