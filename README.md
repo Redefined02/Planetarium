@@ -1,8 +1,8 @@
 # Planetarium
-Creating the solar system using three.js
+Creating the solar system using three.js.
 
 # Install
-Download the source
+Download the source.
 
 # Runtime
-open index.html using your choice of webGL enabled browser
+open index.html using your choice of webGL enabled browser.
