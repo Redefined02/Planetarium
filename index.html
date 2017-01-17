@@ -36,7 +36,7 @@
 		<script src="lib/examples/js/libs/stats.min.js"></script>
 		<script>
 			// declare variables
-			var solarSystem, camera, scene, renderer, controls, bgScene, bgCamera, clock;
+			var solarSystem, camera, scene, renderer, controls, clock;
       var height = window.innerHeight;
       var width = window.innerWidth;
 
@@ -54,10 +54,9 @@
 				camera.position.x = -20;
 				clock = new THREE.Clock();
 
-				// create scene/camera for backdrop
-				bgScene = new THREE.Scene();
-				bgCamera = new THREE.Camera();
-				bgScene.add(bgCamera);
+				var light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 2, 2 ).normalize();
+				scene.add(light);
 
 				// set up controls
 				controls = new THREE.FirstPersonControls(camera);
@@ -75,17 +74,18 @@
 				var maxAniso = renderer.getMaxAnisotropy();
 
 				// create a backdrop with a starfield texture
-				var plane = new THREE.PlaneGeometry(2, 2, 0);
-				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
-				bgTexture.anisotropy = maxAniso;
-				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
-				var starfield = new THREE.Mesh(plane, planeMat);
-				starfield.material.depthTest = false;
-				starfield.material.depthWrite = false;
-				bgScene.add(starfield);
+				var starSphere = new THREE.SphereGeometry(650, 32, 32);
+				var sfTexture = loader.load('http://i.imgur.com/iPzTdix.jpg');
+				var sfMat = new THREE.MeshBasicMaterial({
+					map: sfTexture,
+					side: THREE.BackSide,
+					overdraw: 1
+				});
+				var starfield = new THREE.Mesh(starSphere, sfMat);
+				scene.add(starfield);
 
 				// Sun model
-				var sunGeo = new THREE.SphereGeometry(1, 32, 32);
+				var sunGeo = new THREE.SphereGeometry(7, 32, 32);
 				var sunTexture = loader.load('http://i.imgur.com/Rgl3AtE.jpg?2');
 				sunTexture.anisotropy = maxAniso;
 				var sunMat = new THREE.MeshBasicMaterial({map: sunTexture, overdraw: 0.5});
@@ -94,84 +94,131 @@
 				solarSystem.add(sun);
 
 				// Mercury model
-				var mercuryGeo = new THREE.SphereGeometry(1, 32, 32);
-				var mercTexture = loader.load('http://i.imgur.com/8rlD8tu.jpg');
-				mercTexture.anisotropy = maxAniso;
-				var mercuryMat = new THREE.MeshBasicMaterial({map: mercTexture, overdraw: 0.5});
+				var mercuryGeo = new THREE.SphereGeometry(1.5, 32, 32);
+				var mercTexture = loader.load('http://i.imgur.com/M44vidg.jpg');
+				var mercNormals = loader.load('http://i.imgur.com/N3whfV9.jpg');
+				var mercuryMat = new THREE.MeshPhongMaterial({
+					map: mercTexture,
+					normalMap: mercNormals,
+					overdraw: 1
+				});
 				var mercury = new THREE.Mesh(mercuryGeo, mercuryMat);
-				mercury.position.set(2.2, 0, 0);
+				mercury.anisotropy = maxAniso;
+				mercury.position.set(10, 0, 0);
 				solarSystem.add(mercury);
 
 				// Venus model
-				var venusGeo = new THREE.SphereGeometry(1, 32, 32);
-				var venusTexture = loader.load('http://i.imgur.com/1exVoLT.jpg');
-				venusTexture.anisotropy = maxAniso;
-				var venusMat = new THREE.MeshBasicMaterial({map: venusTexture, overdraw: 0.5});
+				var venusGeo = new THREE.SphereGeometry(2.4, 32, 32);
+				var venusTexture = loader.load('http://i.imgur.com/3B8YKY9.jpg');
+				var venusNormals = loader.load('http://i.imgur.com/g34SFaQ.jpg');
+				var venusMat = new THREE.MeshPhongMaterial({
+					map: venusTexture,
+					normalMap: venusNormals,
+					overdraw: 1
+				});
 				var venus = new THREE.Mesh(venusGeo, venusMat);
-				venus.position.set(4.4, 0, 0);
+				venus.anisotropy = maxAniso;
+				venus.position.set(15, 0, 0);
 				solarSystem.add(venus);
 
 				// Earth Model
-				var earthGeo = new THREE.SphereGeometry(1, 32, 32);
-				var earthTexture = loader.load('http://i.imgur.com/NPI2Xq8.jpg');
-				earthTexture.anisotropy = maxAniso;
-				var earthMat = new THREE.MeshBasicMaterial({map: earthTexture, overdraw: 0.5});
+				var earthGeo = new THREE.SphereGeometry(2.3, 32, 32);
+				var earthTexture = loader.load('http://i.imgur.com/E7XWPWu.jpg?1');
+				var earthNormals = loader.load('http://i.imgur.com/cF6GcIm.png');
+				var earthSpec = loader.load('http://i.imgur.com/Tpn1mSh.png');
+				var earthMat = new THREE.MeshPhongMaterial({
+					map: earthTexture,
+					normalMap: earthNormals,
+					specularMap: earthSpec,
+					overdraw: 1
+				});
 				var earth = new THREE.Mesh(earthGeo, earthMat);
-				earth.position.set(6.6, 0, 0);
+				earth.anisotropy = maxAniso;
+				earth.position.set(22, 0, 0);
 				solarSystem.add(earth);
 
 				// Mars model
-				var marsGeo = new THREE.SphereGeometry(1, 32, 32);
-				var mTexture = loader.load('http://i.imgur.com/qimsjii.jpg');
-				mTexture.anisotropy = maxAniso;
-				var marsMat = new THREE.MeshBasicMaterial({map: mTexture, overdraw: 0.5});
+				var marsGeo = new THREE.SphereGeometry(1.7, 32, 32);
+				var marsTexture = loader.load('http://i.imgur.com/U2uBgtp.jpg');
+				var marsNormals = loader.load('http://i.imgur.com/sx77Afp.jpg');
+				var marsMat = new THREE.MeshPhongMaterial({
+					map: marsTexture,
+					normalMap: marsNormals,
+					overdraw: 1
+				});
 				var mars = new THREE.Mesh(marsGeo, marsMat);
-				mars.position.set(8.8, 0, 0);
+				mars.anisotropy = maxAniso;
+				mars.position.set(29, 0, 0);
 				solarSystem.add(mars);
 
 				// Jupiter model
-				var jupiterGeo = new THREE.SphereGeometry(1, 32, 32);
-				var jupiterTexture = loader.load('http://i.imgur.com/64LsZak.jpg?2');
-				jupiterTexture.anisotropy = maxAniso;
-				var jupiterMat = new THREE.MeshBasicMaterial({map: jupiterTexture, overdraw: 0.5});
+				var jupiterGeo = new THREE.SphereGeometry(3.1, 32, 32);
+				var jupiterTexture = loader.load('http://i.imgur.com/QkrveaS.jpg');
+				var jupiterNormals = loader.load('http://i.imgur.com/q52gDvi.jpg');
+				var jupiterMat = new THREE.MeshPhongMaterial({
+					map: jupiterTexture,
+					normalMap: jupiterNormals,
+					overdraw: 1
+				});
 				var jupiter = new THREE.Mesh(jupiterGeo, jupiterMat);
-				jupiter.position.set(11, 0, 0);
+				jupiter.anisotropy = maxAniso;
+				jupiter.position.set(36, 0, 0);
 				solarSystem.add(jupiter);
 
 				// Saturn model
-				var saturnGeo = new THREE.SphereGeometry(1, 32, 32);
-				var saturnTexture = loader.load('http://i.imgur.com/OiVJTrL.jpg');
-				saturnTexture.anisotropy = maxAniso;
-				var saturnMat = new THREE.MeshBasicMaterial({map: saturnTexture, overdraw: 0.5});
+				var saturnGeo = new THREE.SphereGeometry(3, 32, 32);
+				var saturnTexture = loader.load('http://i.imgur.com/EozwAWm.jpg');
+				var saturnNormals = loader.load('http://i.imgur.com/vf4nMPM.jpg')
+				var saturnMat = new THREE.MeshPhongMaterial({
+					map: saturnTexture,
+					normalMap: saturnNormals,
+					overdraw: 1
+				});
 				var saturn = new THREE.Mesh(saturnGeo, saturnMat);
-				saturn.position.set(13.2, 0, 0);
+				saturn.anisotropy = maxAniso;
+				saturn.position.set(43, 0, 0);
 				solarSystem.add(saturn);
 
 				// Uranus model
-				var uranusGeo = new THREE.SphereGeometry(1, 32, 32);
-				var uranusTexture = loader.load('http://i.imgur.com/9pCZmH5.jpg');
-				uranusTexture.anisotropy = maxAniso;
-				var uranusMat = new THREE.MeshBasicMaterial({map: uranusTexture, overdraw: 0.5});
+				var uranusGeo = new THREE.SphereGeometry(2.8, 32, 32);
+				var uranusTexture = loader.load('http://i.imgur.com/jHWAoMm.jpg');
+				var uranusNormals = loader.load('http://i.imgur.com/yZoVlQ9.jpg')
+				var uranusMat = new THREE.MeshPhongMaterial({
+					map: uranusTexture,
+					normalMap: uranusNormals,
+					overdraw: 1
+				});
 				var uranus = new THREE.Mesh(uranusGeo, uranusMat);
-				uranus.position.set(15.4, 0, 0);
+				uranus.anisotropy = maxAniso;
+				uranus.position.set(50, 0, 0);
 				solarSystem.add(uranus);
 
 				// Neptune model
-				var nepGeo = new THREE.SphereGeometry(1, 32, 32);
-				var nepTexture = loader.load('http://i.imgur.com/StPIvES.jpg');
-				nepTexture.anisotropy = maxAniso;
-				var nepMat = new THREE.MeshBasicMaterial({map: nepTexture, overdraw: 0.5});
+				var nepGeo = new THREE.SphereGeometry(2.75, 32, 32);
+				var nepTexture = loader.load('http://i.imgur.com/BUMTwPF.jpg');
+				var nepNormals = loader.load('http://i.imgur.com/6PZS2vq.jpg');
+				var nepMat = new THREE.MeshPhongMaterial({
+					map: nepTexture,
+					normalMap: nepNormals,
+					overdraw: 1
+				});
 				var neptune = new THREE.Mesh(nepGeo, nepMat);
-				neptune.position.set(17.6, 0, 0);
+				neptune.anisotropy = maxAniso;
+				neptune.position.set(57, 0, 0);
 				solarSystem.add(neptune);
 
 				// Pluto model
-				var plutoGeo = new THREE.SphereGeometry(1, 32, 32);
-				var plutoTexture = loader.load('http://i.imgur.com/SQVRRGU.jpg?1');
-				plutoTexture.anisotropy = maxAniso;
-				var plutoMat = new THREE.MeshBasicMaterial({map: plutoTexture, overdraw: 0.5});
+				var plutoGeo = new THREE.SphereGeometry(1.3, 32, 32);
+				var plutoTexture = loader.load('http://i.imgur.com/PzwlPtR.jpg');
+				var plutoNormals = loader.load('http://i.imgur.com/OncZSak.jpg');
+				var plutoMat = new THREE.MeshPhongMaterial({
+					map: plutoTexture,
+					normalMap: plutoNormals,
+					overdraw: 1
+				});
 				var pluto = new THREE.Mesh(plutoGeo, plutoMat);
-				pluto.position.set(20, 0, 0);
+				pluto.anisotropy = maxAniso;
+				pluto.position.set(64, 0, 0);
 				solarSystem.add(pluto);
 
       	scene.add(solarSystem);
@@ -197,11 +244,6 @@
 			solarSystem.rotation.y += 0.01;
 			controls.update(clock.getDelta());
 
-			// this is required to allow the backdrop to render without covering the planets
-			renderer.autoClear = false;
-			renderer.clear();
-			// add both scenes to the renderer
-			renderer.render(bgScene, bgCamera);
 			renderer.render(scene, camera);
 		};
 		</script>

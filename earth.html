@@ -36,7 +36,7 @@
     <script src="lib/examples/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/examples/js/libs/stats.min.js"></script>
     <script>
-			var camera, bgCamera, scene, bgScene, renderer, container, stats;
+			var camera, scene, renderer, container, stats, light, group;
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -49,46 +49,42 @@
 				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 2000 );
 				camera.position.z = 500;
 				scene = new THREE.Scene();
+				group = new THREE.Group();
 
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-				bgScene = new THREE.Scene();
-				bgCamera = new THREE.Camera();
-				bgScene.add(bgCamera);
-
 				var loader = new THREE.TextureLoader();
 				loader.setCrossOrigin("");
 				var maxAniso = renderer.getMaxAnisotropy();
 
-				// Backdrop
-				var plane = new THREE.PlaneGeometry(2, 2, 0);
-				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
-				bgTexture.anisotropy = maxAniso;
-				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
-				var starfield = new THREE.Mesh(plane, planeMat);
-				starfield.material.depthTest = false;
-				starfield.material.depthWrite = false;
-				bgScene.add(starfield);
+				var starSphere = new THREE.SphereGeometry(900, 32, 32);
+				var sfTexture = loader.load('http://i.imgur.com/iPzTdix.jpg');
+				var sfMat = new THREE.MeshBasicMaterial({
+					map: sfTexture,
+					side: THREE.BackSide,
+					overdraw: 1
+				});
+				var starfield = new THREE.Mesh(starSphere, sfMat);
+				scene.add(starfield);
 
 				// Model
-				var earthGeo = new THREE.SphereGeometry(200, 20, 20);
-				var earthTexture = loader.load('http://i.imgur.com/NPI2Xq8.jpg');
-				var specMap = loader.load('http://i.imgur.com/Th0w4H1.jpg');
-				var bMap = loader.load('http://i.imgur.com/FrJlVaN.jpg');
-				earthTexture.anisotropy = maxAniso;
+				var earthGeo = new THREE.SphereGeometry(200, 32, 32);
+				var earthTexture = loader.load('http://i.imgur.com/FvtmUcL.jpg');
+				var specMap = loader.load('http://i.imgur.com/Tpn1mSh.png');
+				var earthNormals = loader.load('http://i.imgur.com/cF6GcIm.png');
 				var earthMat = new THREE.MeshPhongMaterial({
-					//specular: 0x222222,
-					bumpMap: bMap,
-					bumpScale: 1,
 					map: earthTexture,
-					//specularMap: specMap,
+					normalMap: earthNormals,
+					specularMap: specMap,
 					overdraw: 0.5
 				});
 				var earth = new THREE.Mesh(earthGeo, earthMat);
-				scene.add(earth);
+				earth.anisotropy = maxAniso;
+				group.add(earth);
+				scene.add(group);
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();
@@ -120,12 +116,8 @@
 				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 				camera.lookAt(scene.position);
-				scene.rotation.y -= 0.005;
+				group.rotation.y -= 0.005;
 
-				renderer.autoClear = false;
-				renderer.clear();
-
-				renderer.render(bgScene, bgCamera);
 				renderer.render(scene, camera);
 			}
     </script>

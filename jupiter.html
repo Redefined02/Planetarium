@@ -36,7 +36,7 @@
     <script src="lib/examples/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/examples/js/libs/stats.min.js"></script>
     <script>
-			var camera, bgCamera, scene, bgScene, renderer, container, stats;
+			var camera, scene, renderer, container, stats, group;
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -49,35 +49,39 @@
 				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 2000 );
 				camera.position.z = 500;
 				scene = new THREE.Scene();
+				group = new THREE.Group();
 
         renderer = new THREE.CanvasRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-				bgScene = new THREE.Scene();
-				bgCamera = new THREE.Camera();
-				bgScene.add(bgCamera);
-
 				var loader = new THREE.TextureLoader();
 				loader.setCrossOrigin("");
 				var maxAniso = renderer.getMaxAnisotropy();
 
-				var plane = new THREE.PlaneGeometry(2, 2, 0);
-				bgTexture = loader.load("http://i.imgur.com/yTICj8s.jpg");
-				bgTexture.anisotropy = maxAniso;
-				var planeMat = new THREE.MeshBasicMaterial({map:bgTexture});
-				var starfield = new THREE.Mesh(plane, planeMat);
-				starfield.material.depthTest = false;
-				starfield.material.depthWrite = false;
-				bgScene.add(starfield);
+				var starSphere = new THREE.SphereGeometry(900, 32, 32);
+				var sfTexture = loader.load('http://i.imgur.com/iPzTdix.jpg');
+				var sfMat = new THREE.MeshBasicMaterial({
+					map: sfTexture,
+					side: THREE.BackSide,
+					overdraw: 0.5
+				});
+				var starfield = new THREE.Mesh(starSphere, sfMat);
+				scene.add(starfield);
 
-				var jupiterGeo = new THREE.SphereGeometry(200, 20, 20);
-				var jupiterTexture = loader.load('http://i.imgur.com/64LsZak.jpg?2');
-				jupiterTexture.anisotropy = maxAniso;
-				var jupiterMat = new THREE.MeshBasicMaterial({map: jupiterTexture, overdraw: 0.5});
+				var jupiterGeo = new THREE.SphereGeometry(200, 32, 32);
+				var jupiterTexture = loader.load('http://i.imgur.com/QkrveaS.jpg');
+				var jupiterNormals = loader.load('http://i.imgur.com/q52gDvi.jpg')
+				var jupiterMat = new THREE.MeshPhongMaterial({
+					map: jupiterTexture,
+					normalMap: jupiterNormals,
+					overdraw: 0.5
+				});
 				var jupiter = new THREE.Mesh(jupiterGeo, jupiterMat);
-				scene.add(jupiter);
+				jupiter.anisotropy = maxAniso;
+				group.add(jupiter);
+				scene.add(group);
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();
@@ -109,12 +113,8 @@
 				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 				camera.lookAt(scene.position);
-				scene.rotation.y -= 0.005;
+				group.rotation.y -= 0.005;
 
-				renderer.autoClear = false;
-				renderer.clear();
-
-				renderer.render(bgScene, bgCamera);
 				renderer.render(scene, camera);
 			}
     </script>
