@@ -32,6 +32,7 @@
       <a href="jupiter.html">Jupiter</a> - <a href="uranus.html">Uranus</a> - <a href="neptune.html">Neptune</a> - <a href="pluto.html">Pluto</a>
 		</div>
 		<script src="js/three.min.js"></script>
+		<script src='js/threex.planets.js'></script>
     <script src="lib/examples/js/renderers/Projector.js"></script>
     <script src="lib/examples/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/examples/js/libs/stats.min.js"></script>
@@ -51,7 +52,11 @@
 				scene = new THREE.Scene();
 				group = new THREE.Group();
 
-        renderer = new THREE.CanvasRenderer();
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 205, 205);
+				scene.add(light);
+
+				renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
@@ -76,12 +81,31 @@
 				var saturnMat = new THREE.MeshPhongMaterial({
 					map: saturnTexture,
 					normalMap: saturnNormals,
+					shininess: 5,
 					overdraw: 0.5
 				});
 				var saturn = new THREE.Mesh(saturnGeo, saturnMat);
 				saturn.anisotropy = maxAniso;
 				group.add(saturn);
 				scene.add(group);
+
+				//var saturnRings = THREEx.Planets.createSaturnRing();
+				//scene.add(saturnRings);
+
+				var ringGeo = new THREE.RingGeometry(230, 300, 64, 5, 0, Math.PI * 2);
+				var ringTexture = loader.load('http://i.imgur.com/Q3SJzyo.jpg');
+				var ringAlpha = loader.load('http://i.imgur.com/xnrZisk.gif');
+				var ringMat = new THREE.MeshBasicMaterial({
+					map: ringTexture,
+					alphaMap: ringAlpha,
+					side: THREE.DoubleSide,
+					overdraw: 0.5
+				});
+				var saturnRings = new THREE.Mesh(ringGeo, ringMat);
+				saturnRings.anisotropy = maxAniso;
+				saturnRings.rotateX(1.5708);
+
+				scene.add(saturnRings);
 
 				container.appendChild(renderer.domElement);
 				stats = new Stats();

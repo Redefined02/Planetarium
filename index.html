@@ -61,12 +61,11 @@
 				// set up controls
 				controls = new THREE.FirstPersonControls(camera);
 				controls.movementSpeed = 10;
-				controls.lookSpeed = 0;
+				controls.lookSpeed = 0.1;
 				controls.lookVertical = true;
 
 				// set up all your planets/textures/geometries/objects
 				var geometry = new THREE.SphereGeometry( 1, 32, 32 );
-				var plane = new THREE.PlaneGeometry(2, 2, 0);
 				var loader = new THREE.TextureLoader();
 
 				// set cors policy to anonymous to load texture images
@@ -74,7 +73,7 @@
 				var maxAniso = renderer.getMaxAnisotropy();
 
 				// create a backdrop with a starfield texture
-				var starSphere = new THREE.SphereGeometry(650, 32, 32);
+				var starSphere = new THREE.SphereGeometry(300, 32, 32);
 				var sfTexture = loader.load('http://i.imgur.com/iPzTdix.jpg');
 				var sfMat = new THREE.MeshBasicMaterial({
 					map: sfTexture,

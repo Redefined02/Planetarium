@@ -36,7 +36,7 @@
     <script src="lib/examples/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/examples/js/libs/stats.min.js"></script>
     <script>
-			var camera, scene, renderer, container, stats, group;
+			var camera, scene, renderer, container, stats, group, light;
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -51,7 +51,11 @@
 				scene = new THREE.Scene();
 				group = new THREE.Group();
 
-        renderer = new THREE.CanvasRenderer();
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 205, 205);
+				scene.add(light);
+
+        renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
@@ -75,6 +79,7 @@
 				var jupiterNormals = loader.load('http://i.imgur.com/q52gDvi.jpg')
 				var jupiterMat = new THREE.MeshPhongMaterial({
 					map: jupiterTexture,
+					shininess: 5,
 					normalMap: jupiterNormals,
 					overdraw: 0.5
 				});

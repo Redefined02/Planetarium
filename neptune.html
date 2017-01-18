@@ -51,7 +51,11 @@
 				scene = new THREE.Scene();
 				group = new THREE.Group();
 
-        renderer = new THREE.CanvasRenderer();
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 205, 205);
+				scene.add(light);
+
+        renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
@@ -73,9 +77,10 @@
 				var nepGeo = new THREE.SphereGeometry(200, 32, 32);
 				var nepTexture = loader.load('http://i.imgur.com/BUMTwPF.jpg');
 				var neptuneNormals = loader.load('http://i.imgur.com/6PZS2vq.jpg');
-				var nepMat = new THREE.MeshBasicMaterial({
+				var nepMat = new THREE.MeshPhongMaterial({
 					map: nepTexture,
 					normalMap: neptuneNormals,
+					shininess: 5,
 					overdraw: 1
 				});
 				var neptune = new THREE.Mesh(nepGeo, nepMat);
