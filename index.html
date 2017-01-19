@@ -68,8 +68,8 @@
 
 				// set up lights for scene
 				var light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 0, 2, 0 ).normalize();
-				light.rotateZ(90); 
+				light.position.set( 0, 2, 2 ).normalize();
+				light.rotateZ(90);
 				scene.add(light);
 
 				// set up controls
@@ -78,14 +78,14 @@
 				controls.lookSpeed = 0.1;
 				controls.lookVertical = true;
 
+				// set cors policy to anonymous to load texture images
+				var maxAniso = renderer.getMaxAnisotropy();
+
 				// set up all your planets/textures/geometries/objects
 				var loader = new THREE.TextureLoader();
+				loader.setCrossOrigin("");
 				var boxGeo = new THREE.BoxGeometry(1, 1, 1);
 				var boxMat = new THREE.MeshBasicMaterial({color: 0x00ff00});
-
-				// set cors policy to anonymous to load texture images
-				loader.setCrossOrigin("");
-				var maxAniso = renderer.getMaxAnisotropy();
 
 				// create a backdrop with a starfield texture
 				var starSphere = new THREE.SphereGeometry(300, 32, 32);
