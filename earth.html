@@ -36,7 +36,7 @@
     <script src="lib/examples/js/renderers/CanvasRenderer.js"></script>
     <script src="lib/examples/js/libs/stats.min.js"></script>
     <script>
-			var camera, scene, renderer, container, stats, light, group;
+			var camera, scene, renderer, container, stats, light, group, mGroup;
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -50,6 +50,7 @@
 				camera.position.z = 500;
 				scene = new THREE.Scene();
 				group = new THREE.Group();
+				mGroup = new THREE.Group();
 
 				light = new THREE.DirectionalLight( 0xffffff );
 				light.position.set( 0, 205, 205);
@@ -87,7 +88,24 @@
 				});
 				var earth = new THREE.Mesh(earthGeo, earthMat);
 				earth.anisotropy = maxAniso;
+				earth.receieveShadows = true;
 				group.add(earth);
+
+				var moonGeo = new THREE.SphereGeometry(45, 32, 32);
+				var moonTexture = loader.load('http://i.imgur.com/YcsLu01.jpg');
+				var moonNormals = loader.load('http://i.imgur.com/qBCKrTP.jpg');
+				var moonMat = new THREE.MeshPhongMaterial({
+					map: moonTexture,
+					normalMap: moonNormals,
+					overdraw: 1
+				});
+				var moon = new THREE.Mesh(moonGeo, moonMat);
+				moon.anisotropy = maxAniso;
+				moon.castsShadows = true;
+				moon.position.set(300, 100, 0);
+				mGroup.add(moon);
+
+				scene.add(mGroup);
 				scene.add(group);
 
 				container.appendChild(renderer.domElement);
@@ -121,6 +139,7 @@
 				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 				camera.lookAt(scene.position);
 				group.rotation.y -= 0.005;
+				mGroup.rotation.y += 0.007
 
 				renderer.render(scene, camera);
 			}

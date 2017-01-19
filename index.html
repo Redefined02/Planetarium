@@ -36,8 +36,9 @@
 		<script src="lib/examples/js/libs/stats.min.js"></script>
 		<script>
 			// declare variables
-			var solarSystem, camera, scene, renderer, controls, clock;
-      var height = window.innerHeight;
+			var camera, scene, renderer, controls, clock;
+			var mercGroup, venusGroup, earthGroup, moonGroup, marsGroup, jupiterGroup, saturnGroup, uranusGroup, neptuneGroup, plutoGroup;
+			var height = window.innerHeight;
       var width = window.innerWidth;
 
 			init();
@@ -47,15 +48,28 @@
 				renderer = new THREE.WebGLRenderer();
 				document.body.appendChild(renderer.domElement);
 				renderer.setSize(width, height);
-				solarSystem = new THREE.Group();
 				scene = new THREE.Scene()
 				camera = new THREE.PerspectiveCamera( 75, width/height, 0.1, 1000 );
-				camera.position.z = 0;
-				camera.position.x = -20;
+				camera.position.set(-20,0,0);
 				clock = new THREE.Clock();
 
+				// set up groups for seperate orbits and varying orbital speeds
+				mercGroup = new THREE.Group();
+				venusGroup = new THREE.Group();
+				marsGroup = new THREE.Group();
+				earthGroup = new THREE.Group();
+				moonGroup = new THREE.Group();
+				marsGroup = new THREE.Group();
+				jupiterGroup = new THREE.Group();
+				saturnGroup = new THREE.Group();
+				uranusGroup = new THREE.Group();
+				neptuneGroup = new THREE.Group();
+				plutoGroup = new THREE.Group();
+
+				// set up lights for scene
 				var light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 0, 2, 2 ).normalize();
+				light.position.set( 0, 2, 0 ).normalize();
+				light.rotateZ(90); 
 				scene.add(light);
 
 				// set up controls
@@ -65,8 +79,9 @@
 				controls.lookVertical = true;
 
 				// set up all your planets/textures/geometries/objects
-				var geometry = new THREE.SphereGeometry( 1, 32, 32 );
 				var loader = new THREE.TextureLoader();
+				var boxGeo = new THREE.BoxGeometry(1, 1, 1);
+				var boxMat = new THREE.MeshBasicMaterial({color: 0x00ff00});
 
 				// set cors policy to anonymous to load texture images
 				loader.setCrossOrigin("");
@@ -90,7 +105,9 @@
 				var sunMat = new THREE.MeshBasicMaterial({map: sunTexture, overdraw: 0.5});
 				var sun = new THREE.Mesh(sunGeo, sunMat);
 				sun.position.set(0, 0, 0);
-				solarSystem.add(sun);
+				//solarSystem.add(sun);
+				scene.add(sun);
+
 
 				// Mercury model
 				var mercuryGeo = new THREE.SphereGeometry(1.5, 32, 32);
@@ -103,8 +120,14 @@
 				});
 				var mercury = new THREE.Mesh(mercuryGeo, mercuryMat);
 				mercury.anisotropy = maxAniso;
-				mercury.position.set(10, 0, 0);
-				solarSystem.add(mercury);
+				mercury.position.set(10, 0, 10);
+				// Add rotation point for mercury group
+				var mercCompanion = new THREE.Mesh(boxGeo, boxMat);
+				mercCompanion.position.set(0,0,0);
+				mercCompanion.visible = false;
+				// Add components to the mercury rotation group
+				mercGroup.add(mercury);
+				mercGroup.add(mercCompanion);
 
 				// Venus model
 				var venusGeo = new THREE.SphereGeometry(2.4, 32, 32);
@@ -117,12 +140,19 @@
 				});
 				var venus = new THREE.Mesh(venusGeo, venusMat);
 				venus.anisotropy = maxAniso;
-				venus.position.set(15, 0, 0);
-				solarSystem.add(venus);
+				venus.position.set(15, 0, 15);
+				// Add rotation point for venus group
+				var venusCompanion = new THREE.Mesh(boxGeo, boxMat);
+				venusCompanion.position.set(0,0,0);
+				venusCompanion.visible = false;
+				// Add Components to the venus rotation group
+				venusGroup.add(venus);
+				venusGroup.add(venusCompanion);
+
 
 				// Earth Model
 				var earthGeo = new THREE.SphereGeometry(2.3, 32, 32);
-				var earthTexture = loader.load('http://i.imgur.com/E7XWPWu.jpg?1');
+				var earthTexture = loader.load('http://i.imgur.com/FvtmUcL.jpg');
 				var earthNormals = loader.load('http://i.imgur.com/cF6GcIm.png');
 				var earthSpec = loader.load('http://i.imgur.com/Tpn1mSh.png');
 				var earthMat = new THREE.MeshPhongMaterial({
@@ -133,8 +163,30 @@
 				});
 				var earth = new THREE.Mesh(earthGeo, earthMat);
 				earth.anisotropy = maxAniso;
-				earth.position.set(22, 0, 0);
-				solarSystem.add(earth);
+				earth.position.set(22, 0, -19);
+				// Add rotation point for Earth group
+				var earthCompanion = new THREE.Mesh(boxGeo, boxMat);
+				earthCompanion.position.set(0,0,0);
+				earthCompanion.visible = false;
+				// Add Components to the Earth rotation group
+				earthGroup.add(earth);
+				earthGroup.add(earthCompanion);
+
+				// Moon model
+				var moonGeo = new THREE.SphereGeometry(0.5, 32, 32);
+				var moonTexture = loader.load('http://i.imgur.com/YcsLu01.jpg');
+				var moonNormals = loader.load('http://i.imgur.com/qBCKrTP.jpg');
+				var moonMat = new THREE.MeshPhongMaterial({
+					map: moonTexture,
+					normalMap: moonNormals,
+					overdraw: 1
+				});
+				var moon = new THREE.Mesh(moonGeo, moonMat);
+				moon.anisotropy = maxAniso;
+				moon.position.set(25, 0, -20);
+				moonGroup.add(moon);
+				earthGroup.add(moonGroup);
+
 
 				// Mars model
 				var marsGeo = new THREE.SphereGeometry(1.7, 32, 32);
@@ -147,8 +199,14 @@
 				});
 				var mars = new THREE.Mesh(marsGeo, marsMat);
 				mars.anisotropy = maxAniso;
-				mars.position.set(29, 0, 0);
-				solarSystem.add(mars);
+				mars.position.set(-29, 0, 25);
+				// add rotation point for Mars group
+				var marsCompanion = new THREE.Mesh(boxGeo, boxMat);
+				marsCompanion.position.set(0,0,0);
+				marsCompanion.visible = false;
+				// Add Components to the Mars rotation group
+				marsGroup.add(mars);
+				marsGroup.add(marsCompanion);
 
 				// Jupiter model
 				var jupiterGeo = new THREE.SphereGeometry(3.1, 32, 32);
@@ -161,8 +219,14 @@
 				});
 				var jupiter = new THREE.Mesh(jupiterGeo, jupiterMat);
 				jupiter.anisotropy = maxAniso;
-				jupiter.position.set(36, 0, 0);
-				solarSystem.add(jupiter);
+				jupiter.position.set(34, 0, -33);
+				// Add rotation point for Jupiter Group
+				var jupiterCompanion = new THREE.Mesh(boxGeo, boxMat);
+				jupiterCompanion.position.set(-1,0,0);
+				jupiterCompanion.visible = false;
+				// Add Components to the Jupiter rotation group
+				jupiterGroup.add(jupiter);
+				jupiterGroup.add(jupiterCompanion);
 
 				// Saturn model
 				var saturnGeo = new THREE.SphereGeometry(3, 32, 32);
@@ -175,8 +239,14 @@
 				});
 				var saturn = new THREE.Mesh(saturnGeo, saturnMat);
 				saturn.anisotropy = maxAniso;
-				saturn.position.set(43, 0, 0);
-				solarSystem.add(saturn);
+				saturn.position.set(42, 0, 43);
+				// Add rotation point for Saturn Group
+				var saturnCompanion = new THREE.Mesh(boxGeo, boxMat);
+				saturnCompanion.position.set(1,0,0);
+				saturnCompanion.visible = false;
+				// Add Components to the Saturn rotation group
+				saturnGroup.add(saturn);
+				saturnGroup.add(saturnCompanion);
 
 				// Uranus model
 				var uranusGeo = new THREE.SphereGeometry(2.8, 32, 32);
@@ -189,8 +259,14 @@
 				});
 				var uranus = new THREE.Mesh(uranusGeo, uranusMat);
 				uranus.anisotropy = maxAniso;
-				uranus.position.set(50, 0, 0);
-				solarSystem.add(uranus);
+				uranus.position.set(-52, 0, -52);
+				// Add rotation point for Uranus Group
+				var uranusCompanion = new THREE.Mesh(boxGeo, boxMat);
+				uranusCompanion.position.set(1,0,0);
+				uranusCompanion.visible = false;
+				// Add Components to the Saturn rotation group
+				uranusGroup.add(uranus);
+				uranusGroup.add(uranusCompanion);
 
 				// Neptune model
 				var nepGeo = new THREE.SphereGeometry(2.75, 32, 32);
@@ -203,8 +279,14 @@
 				});
 				var neptune = new THREE.Mesh(nepGeo, nepMat);
 				neptune.anisotropy = maxAniso;
-				neptune.position.set(57, 0, 0);
-				solarSystem.add(neptune);
+				neptune.position.set(-64, 0, 0);
+				// Add rotation point for Neptune Group
+				var neptuneCompanion = new THREE.Mesh(boxGeo, boxMat);
+				neptuneCompanion.position.set(1,0,0);
+				neptuneCompanion.visible = false;
+				// Add Components to the Saturn rotation group
+				neptuneGroup.add(neptune);
+				neptuneGroup.add(neptuneCompanion);
 
 				// Pluto model
 				var plutoGeo = new THREE.SphereGeometry(1.3, 32, 32);
@@ -217,13 +299,30 @@
 				});
 				var pluto = new THREE.Mesh(plutoGeo, plutoMat);
 				pluto.anisotropy = maxAniso;
-				pluto.position.set(64, 0, 0);
-				solarSystem.add(pluto);
+				pluto.position.set(-68, 0, -68);
+				// Add rotation point for Pluto Group
+				var plutoCompanion = new THREE.Mesh(boxGeo, boxMat);
+				plutoCompanion.position.set(1,0,0);
+				plutoCompanion.visible = false;
+				// Add Components to the Saturn rotation group
+				plutoGroup.add(pluto);
+				plutoGroup.add(plutoCompanion);
 
-      	scene.add(solarSystem);
+				// add all the orbital groups to the scene
+				scene.add(mercGroup);
+				scene.add(venusGroup);
+				scene.add(earthGroup);
+				scene.add(moonGroup);
+				scene.add(marsGroup);
+				scene.add(jupiterGroup);
+				scene.add(saturnGroup);
+				scene.add(uranusGroup);
+				scene.add(neptuneGroup);
+				scene.add(plutoGroup);
+				//scene.add(solarSystem);
 
 				window.addEventListener('resize', onWindowResize, false);
-			}
+		}
 
 		// resizes the canvas to fit window size.
 		function onWindowResize(){
@@ -240,7 +339,18 @@
 		}
 
 		function render(){
-			solarSystem.rotation.y += 0.01;
+			// set up rotational speeds for all the planets
+			mercGroup.rotation.y += 0.01;
+			venusGroup.rotation.y += 0.007;
+			earthGroup.rotation.y += 0.005;
+			moonGroup.rotation.y += 0.005;
+			marsGroup.rotation.y += 0.002;
+			jupiterGroup.rotation.y += 0.0025;
+			saturnGroup.rotation.y += 0.0025;
+			uranusGroup.rotation.y += 0.003;
+			neptuneGroup.rotation.y += 0.0035;
+			plutoGroup.rotation.y += 0.001;
+
 			controls.update(clock.getDelta());
 
 			renderer.render(scene, camera);
